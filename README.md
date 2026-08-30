@@ -32,7 +32,26 @@ npm run dev
 
 ## النشر على tel.nashawi.xyz
 
-### خيار 1: Vercel (موصى به)
+### خيار 1: VPS — Hostalika / AlmaLinux (موصى به)
+
+سيرفرك: **server.saifcars.eu** · AlmaLinux 10
+
+دليل مفصل: **[deploy/HOSTALIKA.md](deploy/HOSTALIKA.md)**
+
+**ملخص سريع:**
+
+```bash
+# على السيرفر (بعد رفع المشروع إلى /var/www/nashawi-tel)
+cd /var/www/nashawi-tel
+sudo bash deploy/install.sh
+sudo certbot --nginx -d tel.nashawi.xyz
+```
+
+في DNS أضف سجل **A**: `tel` → `IP-السيرفر`
+
+البيانات تُحفظ دائماً في `/var/lib/nashawi-tel/`.
+
+### خيار 2: Vercel
 
 1. اضغط **Publish** في Cursor أو اربط المستودع بـ Vercel
 2. أضف متغير البيئة `JWT_SECRET` بقيمة عشوائية قوية
@@ -41,9 +60,9 @@ npm run dev
    - **الاسم:** `tel`
    - **القيمة:** `cname.vercel-dns.com` (أو ما يوفره Vercel)
 
-> **ملاحظة:** على Vercel، ملفات البيانات تُخزَّن في `/tmp` وهي مؤقتة. للاستخدام الدائم على Vercel، يُفضَّل ربط قاعدة بيانات (مثل Vercel Postgres). للتخزين الدائم بدون قاعدة بيانات، استخدم خيار الاستضافة الذاتية أدناه.
+> **ملاحظة:** على Vercel، ملفات البيانات مؤقتة. للتخزين الدائم استخدم VPS (Hostalika) أعلاه.
 
-### خيار 2: استضافة ذاتية (VPS / Docker)
+### خيار 3: تشغيل يدوي
 
 ```bash
 npm run build

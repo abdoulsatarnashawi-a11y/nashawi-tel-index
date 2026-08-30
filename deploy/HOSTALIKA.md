@@ -1,174 +1,131 @@
-# نشر الموقع على VPS — Hostalika
+# نشر على Hostalika — AlmaLinux 10
 
-دليل خطوة بخطوة لنشر **tel.nashawi.xyz** على استضافة VPS من Hostalika.
+دليل مخصص لسيرفرك:
 
-## المتطلبات
-
-- VPS يعمل بنظام **Ubuntu 22.04** أو **24.04** (الأكثر شيوعاً على Hostalika)
-- وصول **SSH** (root أو مستخدم sudo)
-- الدومين `nashawi.xyz` يشير إلى السيرفر
-
----
-
-## الخطوة 1: إعداد DNS
-
-في لوحة تحكم الدومين (حيث تدير `nashawi.xyz`):
-
-| النوع | الاسم | القيمة | TTL |
-|-------|-------|--------|-----|
-| **A** | `tel` | `IP-عنوان-الـ-VPS` | 300 |
-
-انتظر 5–30 دقيقة حتى ينتشر DNS. تحقق بـ:
-
-```bash
-dig tel.nashawi.xyz +short
-```
+| البند | القيمة |
+|-------|--------|
+| **Hostname** | `server.saifcars.eu` |
+| **النظام** | AlmaLinux 10.0 |
+| **الموارد** | 2 vCPU · 4 GB RAM · 80 GB |
+| **الدومين** | `tel.nashawi.xyz` |
 
 ---
 
-## الخطوة 2: الاتصال بالسيرفر
-
-من Hostalika، انسخ **عنوان IP** و**كلمة مرور SSH**، ثم:
+## الخطوة 1: الاتصال بالسيرفر
 
 ```bash
-ssh root@IP-السيرفر
+ssh root@server.saifcars.eu
 ```
 
-أو إذا أنشأت مستخدماً:
+أدخل كلمة المرور من لوحة Hostalika.
+
+> إذا لم يعمل بالاسم، استخدم **عنوان IP** من لوحة Hostalika:
+> `ssh root@IP-السيرفر`
+
+---
+
+## الخطوة 2: DNS
+
+في لوحة تحكم دومين `nashawi.xyz`:
+
+| النوع | الاسم | القيمة |
+|-------|-------|--------|
+| **A** | `tel` | IP السيرفر (من Hostalika) |
+
+لمعرفة IP السيرفر بعد الاتصال:
 
 ```bash
-ssh username@IP-السيرفر
+curl -4 ifconfig.me
 ```
 
 ---
 
 ## الخطوة 3: رفع المشروع
 
-### الطريقة أ — عبر Git (موصى بها)
-
-بعد إنشاء المستودع ورفع الكود:
+### من جهازك (بعد إنشاء المستودع)
 
 ```bash
-apt update && apt install -y git
-git clone https://github.com/YOUR_USER/nashawi-tel.git /var/www/nashawi-tel
+# في مجلد المشروع على جهازك
+bash deploy/pack.sh
+scp /tmp/nashawi-tel.tar.gz root@server.saifcars.eu:/tmp/
+```
+
+### على السيرفر
+
+```bash
+dnf install -y tar git
+mkdir -p /var/www
+tar -xzf /tmp/nashawi-tel.tar.gz -C /var/www
+mv /var/www/nashawi-tel* /var/www/nashawi-tel 2>/dev/null || true
 cd /var/www/nashawi-tel
+chmod +x deploy/*.sh
+bash deploy/install.sh
 ```
 
-### الطريقة ب — عبر SCP من جهازك
+> السكربت يدعم AlmaLinux تلقائياً (dnf, firewalld, SELinux, nginx/conf.d).
+
+### أو عبر Git
 
 ```bash
-scp -r ./nashawi-tel root@IP-السيرفر:/var/www/
-```
-
----
-
-## الخطوة 4: التثبيت التلقائي
-
-على السيرفر:
-
-```bash
+dnf install -y git
+git clone YOUR_REPO_URL /var/www/nashawi-tel
 cd /var/www/nashawi-tel
-chmod +x deploy/install.sh deploy/update.sh
-sudo bash deploy/install.sh
+bash deploy/install.sh
 ```
-
-السكربت يقوم بـ:
-- تثبيت Node.js 20، Nginx، PM2، Certbot
-- بناء التطبيق
-- إنشاء مجلد بيانات دائم `/var/lib/nashawi-tel`
-- إعداد Nginx كـ reverse proxy
-- تشغيل التطبيق على المنفذ 3000
 
 ---
 
-## الخطوة 5: تفعيل HTTPS (SSL مجاني)
+## الخطوة 4: SSL
 
-بعد انتشار DNS:
+بعد انتشار DNS (تحقق: `dig tel.nashawi.xyz +short`):
 
 ```bash
-sudo certbot --nginx -d tel.nashawi.xyz
+certbot --nginx -d tel.nashawi.xyz
 ```
-
-اتبع التعليمات (أدخل بريدك، وافق على الشروط). Certbot يجدد الشهادة تلقائياً.
 
 ---
 
-## الخطوة 6: إعداد المدير
+## الخطوة 5: إعداد المدير
 
 1. افتح **https://tel.nashawi.xyz/admin/setup**
-2. اضغط «إنشاء كلمة المرور والمفتاح»
-3. **انسخ** كلمة المرور ومفتاح الاسترداد واحفظهما
-4. ادخل للوحة الإدارة وأضف جهات الاتصال
+2. أنشئ كلمة المرور ومفتاح الاسترداد
+3. **انسخهما واحفظهما**
 
 ---
 
-## التحديث بعد تعديل الكود
+## أوامر AlmaLinux المفيدة
 
 ```bash
-cd /var/www/nashawi-tel
-bash deploy/update.sh
-```
-
----
-
-## أوامر مفيدة
-
-```bash
-# حالة التطبيق
+# حالة الخدمات
+systemctl status nginx
 pm2 status
 pm2 logs nashawi-tel
 
-# إعادة التشغيل
-pm2 restart nashawi-tel
+# جدار الحماية
+firewall-cmd --list-all
 
-# حالة Nginx
-sudo systemctl status nginx
-sudo nginx -t
+# SELinux (إذا ظهر 502)
+getenforce
+setsebool -P httpd_can_network_connect 1
 
-# البيانات المحفوظة
-ls -la /var/lib/nashawi-tel/
+# تحديث التطبيق
+cd /var/www/nashawi-tel && bash deploy/update.sh
 ```
-
----
-
-## ملفات الإعداد
-
-| الملف | الغرض |
-|-------|-------|
-| `deploy/ecosystem.config.cjs` | إعداد PM2 |
-| `deploy/nginx-tel.nashawi.xyz.conf` | إعداد Nginx |
-| `deploy/env.production.example` | متغيرات البيئة |
-| `/var/lib/nashawi-tel/` | جهات الاتصال + بيانات المدير |
 
 ---
 
 ## استكشاف الأخطاء
 
-### الموقع لا يفتح
-```bash
-pm2 logs nashawi-tel --lines 50
-curl -I http://127.0.0.1:3000
-```
-
-### خطأ 502 Bad Gateway
-- تأكد أن PM2 يعمل: `pm2 status`
-- أعد التشغيل: `pm2 restart nashawi-tel`
-
-### SSL لا يعمل
-- تأكد أن DNS يشير للـ IP الصحيح
-- جرّب: `sudo certbot renew --dry-run`
-
-### نسيت كلمة مرور المدير
-افتح **https://tel.nashawi.xyz/admin/recover** وأدخل مفتاح الاسترداد.
+| المشكلة | الحل |
+|---------|------|
+| `Connection refused` SSH | تحقق من IP وكلمة المرور في Hostalika |
+| 502 Bad Gateway | `pm2 restart nashawi-tel` ثم `nginx -t` |
+| Certbot يفشل | تأكد DNS يشير لـ IP السيرفر |
+| Permission denied على البيانات | `chown -R root:root /var/lib/nashawi-tel` |
 
 ---
 
-## جدار الحماية (اختياري)
+## ملاحظة عن server.saifcars.eu
 
-```bash
-sudo ufw allow OpenSSH
-sudo ufw allow 'Nginx Full'
-sudo ufw enable
-```
-
-لا تفتح المنفذ 3000 للعامة — Nginx يتولى ذلك داخلياً.
+`server.saifcars.eu` هو **اسم السيرفر** للوصول عبر SSH.
+الموقع العام سيكون على **`tel.nashawi.xyz`** بعد إعداد DNS وSSL.
