@@ -4,20 +4,22 @@
 set -euo pipefail
 
 OUT="/tmp/nashawi-tel.tar.gz"
+ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 
+cd "$ROOT"
 tar -czf "$OUT" \
   --exclude=node_modules \
   --exclude=.next \
   --exclude=.git \
   --exclude=data/admin.json \
-  -C "$(dirname "$(pwd)")" "$(basename "$(pwd)")"
+  --transform 's,^,nashawi-tel/,' \
+  .
 
 echo "✅ تم إنشاء: $OUT"
 echo ""
-echo "ارفع إلى السيرفر:"
+echo "ارفع إلى السيرفر (Terminal على جهازك):"
 echo "  scp $OUT root@server.saifcars.eu:/tmp/"
 echo ""
-echo "على السيرفر:"
-echo "  mkdir -p /var/www/nashawi-tel"
-echo "  tar -xzf /tmp/nashawi-tel.tar.gz -C /var/www --strip-components=0"
-echo "  cd /var/www/nashawi-tel && sudo bash deploy/install.sh"
+echo "على السيرفر (Terminal):"
+echo "  tar -xzf /tmp/nashawi-tel.tar.gz -C /var/www"
+echo "  cd /var/www/nashawi-tel && bash deploy/install.sh"
