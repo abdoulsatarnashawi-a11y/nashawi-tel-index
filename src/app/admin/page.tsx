@@ -98,17 +98,26 @@ export default function AdminDashboardPage() {
       body: JSON.stringify(data),
     });
 
-    const result = await res.json();
+    let result: { contact?: { id: string }; error?: string };
+    try {
+      result = await res.json();
+    } catch {
+      throw new Error("فشل الحفظ — خطأ في الخادم");
+    }
+
     if (!res.ok) throw new Error(result.error ?? "فشل الحفظ");
 
-    const contactId = editing?.id ?? result.contact.id;
+    const contactId = editing?.id ?? result.contact?.id;
+    if (!contactId) {
+      throw new Error("فشل الحفظ — لم يُعاد معرّف السجل");
+    }
 
     if (options?.removeImage) {
       const deleteRes = await fetch(`/api/admin/contacts/${contactId}/image`, {
         method: "DELETE",
       });
       if (!deleteRes.ok) {
-        const deleteResult = await deleteRes.json();
+        const deleteResult = await deleteRes.json().catch(() => ({}));
         throw new Error(deleteResult.error ?? "فشل حذف الصورة");
       }
     } else if (options?.imageFile) {
@@ -119,8 +128,11 @@ export default function AdminDashboardPage() {
         body: formData,
       });
       if (!uploadRes.ok) {
-        const uploadResult = await uploadRes.json();
-        throw new Error(uploadResult.error ?? "فشل رفع الصورة");
+        const uploadResult = await uploadRes.json().catch(() => ({}));
+        throw new Error(
+          uploadResult.error ??
+            "تم حفظ السجل لكن فشل رفع الصورة — تحقق من صلاحيات المجلد"
+        );
       }
     }
 

@@ -292,7 +292,7 @@ export function ContactForm({
                 value={form.category}
                 onValueChange={(v) => v && setForm({ ...form, category: v })}
               >
-                <SelectTrigger className={fieldClass}>
+                <SelectTrigger className={cn(fieldClass, "w-full")}>
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -323,7 +323,7 @@ export function ContactForm({
             <p className="text-xs text-destructive text-center">{error}</p>
           )}
 
-          <DialogFooter className="gap-2 pt-1 sm:gap-2">
+          <DialogFooter className="mx-0 mb-0 border-0 bg-transparent p-0 pt-1 gap-2 sm:gap-2">
             <Button
               type="button"
               variant="outline"
