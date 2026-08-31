@@ -52,7 +52,7 @@ export default function AdminRecoverPage() {
 
   if (credentials) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-slate-50 to-white p-4">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-background to-muted/30 p-4">
         <Card className="w-full max-w-lg">
           <CardHeader className="text-center">
             <CardTitle className="text-2xl text-green-700">
@@ -78,7 +78,7 @@ export default function AdminRecoverPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-slate-50 to-white p-4">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-background to-muted/30 p-4">
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
           <div className="mx-auto mb-2 flex size-12 items-center justify-center rounded-xl bg-amber-500 text-white">

@@ -1,14 +1,15 @@
 import { Phone, Settings } from "lucide-react";
 import { LinkButton } from "@/components/link-button";
 import { DirectoryClient } from "@/components/directory-client";
+import { ThemeToggle } from "@/components/theme-toggle";
 import { getContacts } from "@/lib/storage";
 
 export default async function HomePage() {
   const contacts = await getContacts();
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white">
-      <header className="sticky top-0 z-10 border-b bg-white/80 backdrop-blur-md">
+    <div className="min-h-screen bg-gradient-to-b from-background to-muted/30">
+      <header className="sticky top-0 z-10 border-b bg-background/80 backdrop-blur-md">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between gap-4">
           <div className="flex items-center gap-3">
             <div className="flex size-10 items-center justify-center rounded-xl bg-primary text-primary-foreground">
@@ -19,10 +20,13 @@ export default async function HomePage() {
               <p className="text-sm text-muted-foreground">tel.nashawi.xyz</p>
             </div>
           </div>
-          <LinkButton href="/admin/login" variant="outline" size="sm">
-            <Settings className="size-4 ml-1" />
-            الإدارة
-          </LinkButton>
+          <div className="flex items-center gap-2">
+            <ThemeToggle />
+            <LinkButton href="/admin/login" variant="outline" size="sm">
+              <Settings className="size-4 ml-1" />
+              الإدارة
+            </LinkButton>
+          </div>
         </div>
       </header>
 

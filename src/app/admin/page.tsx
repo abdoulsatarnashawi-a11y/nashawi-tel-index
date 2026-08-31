@@ -31,6 +31,7 @@ import {
 } from "lucide-react";
 import { ImportDialog } from "@/components/import-dialog";
 import { ImportBanner } from "@/components/import-banner";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 export default function AdminDashboardPage() {
   const router = useRouter();
@@ -136,8 +137,8 @@ export default function AdminDashboardPage() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50">
-      <header className="sticky top-0 z-10 border-b bg-white">
+    <div className="min-h-screen bg-background">
+      <header className="sticky top-0 z-10 border-b bg-background/95 backdrop-blur-sm">
         <div className="container mx-auto px-4 py-4 flex flex-wrap items-center justify-between gap-3">
           <div>
             <h1 className="text-xl font-bold">لوحة الإدارة</h1>
@@ -146,6 +147,7 @@ export default function AdminDashboardPage() {
             </p>
           </div>
           <div className="flex flex-wrap gap-2">
+            <ThemeToggle />
             <LinkButton href="/" variant="outline" size="sm">
               <Home className="size-4 ml-1" />
               الدليل
