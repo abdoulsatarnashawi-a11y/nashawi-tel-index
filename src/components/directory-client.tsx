@@ -5,8 +5,9 @@ import type { Contact } from "@/lib/types";
 import { CATEGORIES } from "@/lib/types";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { ContactTable } from "@/components/contact-table";
+import { ContactCard, CONTACT_GRID_CLASS } from "@/components/contact-card";
 import { Search, Users } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 interface DirectoryClientProps {
   initialContacts: Contact[];
@@ -95,7 +96,11 @@ export function DirectoryClient({ initialContacts }: DirectoryClientProps) {
           </p>
         </div>
       ) : (
-        <ContactTable contacts={filtered} />
+        <div className={cn(CONTACT_GRID_CLASS)}>
+          {filtered.map((contact) => (
+            <ContactCard key={contact.id} contact={contact} />
+          ))}
+        </div>
       )}
     </div>
   );

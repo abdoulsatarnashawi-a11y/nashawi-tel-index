@@ -6,7 +6,8 @@ import { LinkButton } from "@/components/link-button";
 import { Button } from "@/components/ui/button";
 import type { Contact } from "@/lib/types";
 import { Input } from "@/components/ui/input";
-import { ContactTable } from "@/components/contact-table";
+import { ContactCard, CONTACT_GRID_CLASS } from "@/components/contact-card";
+import { cn } from "@/lib/utils";
 import {
   ContactForm,
   type ContactFormData,
@@ -208,15 +209,20 @@ export default function AdminDashboardPage() {
             <p>لا توجد جهات اتصال. أضف أول سجل.</p>
           </div>
         ) : (
-          <ContactTable
-            contacts={filtered}
-            admin
-            onEdit={(c) => {
-              setEditing(c);
-              setFormOpen(true);
-            }}
-            onDelete={handleDelete}
-          />
+          <div className={cn(CONTACT_GRID_CLASS)}>
+            {filtered.map((contact) => (
+              <ContactCard
+                key={contact.id}
+                contact={contact}
+                admin
+                onEdit={(c) => {
+                  setEditing(c);
+                  setFormOpen(true);
+                }}
+                onDelete={handleDelete}
+              />
+            ))}
+          </div>
         )}
       </main>
 

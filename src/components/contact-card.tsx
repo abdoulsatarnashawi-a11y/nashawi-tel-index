@@ -3,17 +3,15 @@
 import { useState } from "react";
 import type { Contact } from "@/lib/types";
 import { Badge } from "@/components/ui/badge";
-import { LinkButton } from "@/components/link-button";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import {
-  MapPin,
-  Phone,
-  Mail,
-  Pencil,
-  Trash2,
   MessageCircle,
+  Pencil,
+  Phone,
+  Trash2,
 } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 interface ContactCardProps {
   contact: Contact;
@@ -32,28 +30,30 @@ export function ContactCard({
   const phoneDigits = contact.phone.replace(/\D/g, "");
 
   return (
-    <Card className="group hover:shadow-md transition-shadow">
-      <CardContent className="p-4 space-y-3">
-        <div className="flex items-start justify-between gap-2">
-          <div>
-            <h3 className="font-semibold text-lg">{contact.name}</h3>
-            <Badge variant="secondary" className="mt-1">
-              {contact.category}
-            </Badge>
-          </div>
+    <Card className="group gap-0 py-0 hover:shadow-sm transition-shadow overflow-hidden">
+      <CardContent className="p-2 space-y-1">
+        <div className="flex items-start justify-between gap-1 min-h-[2rem]">
+          <h3
+            className="font-medium text-xs leading-tight line-clamp-2 flex-1"
+            title={contact.name}
+          >
+            {contact.name}
+          </h3>
           {admin && (
-            <div className="flex gap-1 opacity-80 group-hover:opacity-100">
+            <div className="flex shrink-0 opacity-70 group-hover:opacity-100">
               <Button
                 variant="ghost"
-                size="icon-sm"
+                size="icon-xs"
+                className="size-5"
                 onClick={() => onEdit?.(contact)}
                 aria-label="تعديل"
               >
-                <Pencil className="size-4" />
+                <Pencil className="size-2.5" />
               </Button>
               <Button
                 variant="ghost"
-                size="icon-sm"
+                size="icon-xs"
+                className="size-5"
                 onClick={async () => {
                   if (!confirm("هل تريد حذف هذا السجل؟")) return;
                   setDeleting(true);
@@ -62,75 +62,57 @@ export function ContactCard({
                 disabled={deleting}
                 aria-label="حذف"
               >
-                <Trash2 className="size-4 text-destructive" />
+                <Trash2 className="size-2.5 text-destructive" />
               </Button>
             </div>
           )}
         </div>
 
-        <div className="space-y-2 text-sm">
-          <a
-            href={`tel:${contact.phone}`}
-            className="flex items-center gap-2 text-primary hover:underline dir-ltr justify-end"
-          >
-            <Phone className="size-4 shrink-0" />
-            {contact.phone}
-          </a>
+        <Badge
+          variant="secondary"
+          className="h-4 px-1 text-[9px] font-normal max-w-full truncate"
+        >
+          {contact.category}
+        </Badge>
 
-          {contact.phone2 && (
-            <a
-              href={`tel:${contact.phone2}`}
-              className="flex items-center gap-2 text-muted-foreground hover:underline dir-ltr justify-end"
-            >
-              <Phone className="size-4 shrink-0" />
-              {contact.phone2}
-            </a>
-          )}
-
-          {contact.email && (
-            <a
-              href={`mailto:${contact.email}`}
-              className="flex items-center gap-2 text-muted-foreground hover:underline dir-ltr justify-end"
-            >
-              <Mail className="size-4 shrink-0" />
-              {contact.email}
-            </a>
-          )}
-
-          <div className="flex items-start gap-2 text-muted-foreground">
-            <MapPin className="size-4 shrink-0 mt-0.5" />
-            <span>
-              {contact.address}
-              {contact.city ? ` — ${contact.city}` : ""}
-            </span>
-          </div>
-
-          {contact.notes && (
-            <p className="text-muted-foreground text-xs bg-muted/50 rounded-md p-2">
-              {contact.notes}
-            </p>
-          )}
-        </div>
+        <a
+          href={`tel:${contact.phone}`}
+          className="block text-[10px] text-primary hover:underline dir-ltr truncate"
+          title={contact.phone}
+        >
+          {contact.phone}
+        </a>
 
         {!admin && (
-          <div className="flex gap-2 pt-1">
-            <LinkButton href={`tel:${contact.phone}`} size="sm" className="flex-1">
-              اتصال
-            </LinkButton>
-            <LinkButton
+          <div className="flex gap-0.5 pt-0.5">
+            <a
+              href={`tel:${contact.phone}`}
+              className={cn(
+                "inline-flex flex-1 items-center justify-center rounded h-5",
+                "bg-primary/10 text-primary hover:bg-primary/20"
+              )}
+              aria-label="اتصال"
+            >
+              <Phone className="size-2.5" />
+            </a>
+            <a
               href={`https://wa.me/${phoneDigits}`}
-              size="sm"
-              variant="outline"
-              className="flex-1"
               target="_blank"
               rel="noopener noreferrer"
+              className={cn(
+                "inline-flex flex-1 items-center justify-center rounded h-5",
+                "bg-green-500/10 text-green-700 hover:bg-green-500/20"
+              )}
+              aria-label="واتساب"
             >
-              <MessageCircle className="size-4 ml-1" />
-              واتساب
-            </LinkButton>
+              <MessageCircle className="size-2.5" />
+            </a>
           </div>
         )}
       </CardContent>
     </Card>
   );
 }
+
+export const CONTACT_GRID_CLASS =
+  "grid gap-2 grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6";
