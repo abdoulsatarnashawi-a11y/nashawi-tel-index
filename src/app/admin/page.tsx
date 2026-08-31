@@ -11,6 +11,7 @@ import { cn } from "@/lib/utils";
 import {
   ContactForm,
   type ContactFormData,
+  type ContactFormSaveOptions,
 } from "@/components/contact-form";
 import { CredentialDisplay } from "@/components/credential-display";
 import {
@@ -82,7 +83,10 @@ export default function AdminDashboardPage() {
       .includes(q);
   });
 
-  async function handleSave(data: ContactFormData) {
+  async function handleSave(
+    data: ContactFormData,
+    options?: ContactFormSaveOptions
+  ) {
     const url = editing
       ? `/api/admin/contacts/${editing.id}`
       : "/api/admin/contacts";
@@ -96,6 +100,30 @@ export default function AdminDashboardPage() {
 
     const result = await res.json();
     if (!res.ok) throw new Error(result.error ?? "فشل الحفظ");
+
+    const contactId = editing?.id ?? result.contact.id;
+
+    if (options?.removeImage) {
+      const deleteRes = await fetch(`/api/admin/contacts/${contactId}/image`, {
+        method: "DELETE",
+      });
+      if (!deleteRes.ok) {
+        const deleteResult = await deleteRes.json();
+        throw new Error(deleteResult.error ?? "فشل حذف الصورة");
+      }
+    } else if (options?.imageFile) {
+      const formData = new FormData();
+      formData.append("image", options.imageFile);
+      const uploadRes = await fetch(`/api/admin/contacts/${contactId}/image`, {
+        method: "POST",
+        body: formData,
+      });
+      if (!uploadRes.ok) {
+        const uploadResult = await uploadRes.json();
+        throw new Error(uploadResult.error ?? "فشل رفع الصورة");
+      }
+    }
+
     await loadContacts();
     setEditing(null);
   }

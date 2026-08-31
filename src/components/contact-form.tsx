@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { ContactAvatar } from "@/components/contact-avatar";
 import {
   Select,
   SelectContent,
@@ -21,12 +22,16 @@ import {
   DialogTitle,
   DialogFooter,
 } from "@/components/ui/dialog";
+import { ImagePlus, Trash2 } from "lucide-react";
 
 interface ContactFormProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   contact?: Contact | null;
-  onSave: (data: ContactFormData) => Promise<void>;
+  onSave: (
+    data: ContactFormData,
+    options?: ContactFormSaveOptions
+  ) => Promise<void>;
 }
 
 export interface ContactFormData {
@@ -38,6 +43,11 @@ export interface ContactFormData {
   city: string;
   category: string;
   notes: string;
+}
+
+export interface ContactFormSaveOptions {
+  imageFile?: File | null;
+  removeImage?: boolean;
 }
 
 const emptyForm: ContactFormData = {
@@ -60,6 +70,15 @@ export function ContactForm({
   const [form, setForm] = useState<ContactFormData>(emptyForm);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [removeImage, setRemoveImage] = useState(false);
+
+  function resetImageState(nextContact?: Contact | null) {
+    setImageFile(null);
+    setRemoveImage(false);
+    setImagePreview(nextContact?.image ?? null);
+  }
 
   useEffect(() => {
     if (open && contact) {
@@ -73,8 +92,10 @@ export function ContactForm({
         category: contact.category,
         notes: contact.notes ?? "",
       });
+      resetImageState(contact);
     } else if (open && !contact) {
       setForm(emptyForm);
+      resetImageState(null);
     }
   }, [open, contact]);
 
@@ -90,11 +111,27 @@ export function ContactForm({
         category: contact.category,
         notes: contact.notes ?? "",
       });
+      resetImageState(contact);
     } else if (next) {
       setForm(emptyForm);
+      resetImageState(null);
     }
     setError("");
     onOpenChange(next);
+  }
+
+  function handleImageChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setImageFile(file);
+    setRemoveImage(false);
+    setImagePreview(URL.createObjectURL(file));
+  }
+
+  function handleRemoveImage() {
+    setImageFile(null);
+    setRemoveImage(true);
+    setImagePreview(null);
   }
 
   async function handleSubmit(e: React.FormEvent) {
@@ -102,15 +139,21 @@ export function ContactForm({
     setSaving(true);
     setError("");
     try {
-      await onSave(form);
+      await onSave(form, { imageFile, removeImage });
       onOpenChange(false);
       setForm(emptyForm);
+      resetImageState(null);
     } catch (err) {
       setError(err instanceof Error ? err.message : "حدث خطأ");
     } finally {
       setSaving(false);
     }
   }
+
+  const previewContact = {
+    name: form.name || "جهة اتصال",
+    image: removeImage ? undefined : imagePreview ?? undefined,
+  };
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
@@ -122,6 +165,40 @@ export function ContactForm({
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-4">
+          <div className="flex flex-col items-center gap-3 rounded-lg border bg-muted/30 p-4">
+            <ContactAvatar contact={previewContact} size="lg" />
+            <div className="flex flex-wrap justify-center gap-2">
+              <Label
+                htmlFor="image"
+                className="inline-flex cursor-pointer items-center gap-1 rounded-lg border bg-background px-3 py-1.5 text-sm hover:bg-muted"
+              >
+                <ImagePlus className="size-4" />
+                {imagePreview ? "تغيير الصورة" : "إضافة صورة"}
+              </Label>
+              <Input
+                id="image"
+                type="file"
+                accept="image/jpeg,image/png,image/webp,image/gif"
+                className="hidden"
+                onChange={handleImageChange}
+              />
+              {(imagePreview || contact?.image) && (
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={handleRemoveImage}
+                >
+                  <Trash2 className="size-4 ml-1" />
+                  حذف الصورة
+                </Button>
+              )}
+            </div>
+            <p className="text-xs text-muted-foreground text-center">
+              JPG أو PNG أو WEBP — حتى 2 ميجابايت
+            </p>
+          </div>
+
           <div className="space-y-2">
             <Label htmlFor="name">الاسم *</Label>
             <Input

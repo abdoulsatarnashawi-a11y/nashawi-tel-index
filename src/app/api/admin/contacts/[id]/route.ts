@@ -38,6 +38,7 @@ export async function PUT(request: Request, context: RouteContext) {
     city: city?.trim() || undefined,
     category: CATEGORIES.includes(category) ? category : "أخرى",
     notes: notes?.trim() || undefined,
+    image: existing.image,
     updatedAt: new Date().toISOString(),
   });
 

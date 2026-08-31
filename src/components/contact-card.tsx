@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { ContactDetailsDialog } from "@/components/contact-details-dialog";
+import { ContactAvatar } from "@/components/contact-avatar";
 import {
   Info,
   MessageCircle,
@@ -36,7 +37,18 @@ export function ContactCard({
     <>
       <Card className="group gap-0 py-0 hover:shadow-sm transition-shadow overflow-hidden">
         <CardContent className="p-2 space-y-1">
-          <div className="flex items-start justify-between gap-1 min-h-[2rem]">
+          <div className="flex justify-center">
+            <button
+              type="button"
+              onClick={() => setDetailsOpen(true)}
+              className="rounded-full hover:opacity-90 transition-opacity"
+              aria-label={`عرض تفاصيل ${contact.name}`}
+            >
+              <ContactAvatar contact={contact} size="sm" />
+            </button>
+          </div>
+
+          <div className="flex items-start justify-between gap-1">
             <button
               type="button"
               onClick={() => setDetailsOpen(true)}

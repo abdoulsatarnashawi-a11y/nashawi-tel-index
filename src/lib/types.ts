@@ -8,6 +8,7 @@ export interface Contact {
   city?: string;
   category: string;
   notes?: string;
+  image?: string;
   createdAt: string;
   updatedAt: string;
 }

@@ -1,6 +1,7 @@
 import { promises as fs } from "fs";
 import path from "path";
 import type { AdminConfig, Contact, ContactsData } from "./types";
+import { deleteContactImageFiles } from "./uploads";
 
 const DATA_DIR =
   process.env.DATA_DIR ?? path.join(process.cwd(), "data");
@@ -59,6 +60,7 @@ export async function updateContact(contact: Contact): Promise<Contact> {
 export async function deleteContact(id: string): Promise<void> {
   const contacts = await getContacts();
   await saveContacts(contacts.filter((c) => c.id !== id));
+  await deleteContactImageFiles(id);
 }
 
 export async function addContactsBulk(

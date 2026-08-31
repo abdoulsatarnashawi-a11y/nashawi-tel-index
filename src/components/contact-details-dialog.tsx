@@ -9,6 +9,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { ContactAvatar } from "@/components/contact-avatar";
 import {
   Mail,
   MapPin,
@@ -56,10 +57,15 @@ export function ContactDetailsDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle className="text-lg">{contact.name}</DialogTitle>
-          <Badge variant="secondary" className="w-fit">
-            {contact.category}
-          </Badge>
+          <div className="flex flex-col items-center gap-3 sm:flex-row sm:items-start">
+            <ContactAvatar contact={contact} size="lg" />
+            <div className="text-center sm:text-right space-y-2">
+              <DialogTitle className="text-lg">{contact.name}</DialogTitle>
+              <Badge variant="secondary" className="w-fit">
+                {contact.category}
+              </Badge>
+            </div>
+          </div>
         </DialogHeader>
 
         <div className="space-y-4 py-2">
