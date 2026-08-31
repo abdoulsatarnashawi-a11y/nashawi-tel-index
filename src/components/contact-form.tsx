@@ -23,6 +23,7 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import { ImagePlus, Trash2 } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 interface ContactFormProps {
   open: boolean;
@@ -60,6 +61,9 @@ const emptyForm: ContactFormData = {
   category: "عائلة",
   notes: "",
 };
+
+const fieldClass = "h-8 text-sm";
+const labelClass = "text-xs text-muted-foreground";
 
 export function ContactForm({
   open,
@@ -157,122 +161,138 @@ export function ContactForm({
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto">
-        <DialogHeader>
-          <DialogTitle>
+      <DialogContent className="max-w-[min(100%-1rem,340px)] gap-2 p-3 max-h-[88vh] overflow-y-auto">
+        <DialogHeader className="gap-1">
+          <DialogTitle className="text-sm">
             {contact ? "تعديل جهة اتصال" : "إضافة جهة اتصال"}
           </DialogTitle>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="flex flex-col items-center gap-3 rounded-lg border bg-muted/30 p-4">
-            <ContactAvatar contact={previewContact} size="lg" />
-            <div className="flex flex-wrap justify-center gap-2">
-              <Label
-                htmlFor="image"
-                className="inline-flex cursor-pointer items-center gap-1 rounded-lg border bg-background px-3 py-1.5 text-sm hover:bg-muted"
-              >
-                <ImagePlus className="size-4" />
-                {imagePreview ? "تغيير الصورة" : "إضافة صورة"}
-              </Label>
-              <Input
-                id="image"
-                type="file"
-                accept="image/jpeg,image/png,image/webp,image/gif"
-                className="hidden"
-                onChange={handleImageChange}
-              />
-              {(imagePreview || contact?.image) && (
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  onClick={handleRemoveImage}
+        <form onSubmit={handleSubmit} className="space-y-2.5">
+          <div className="flex items-center gap-2 rounded-md border bg-muted/30 p-2">
+            <ContactAvatar contact={previewContact} size="md" className="shrink-0" />
+            <div className="min-w-0 flex-1 space-y-1">
+              <div className="flex flex-wrap gap-1">
+                <Label
+                  htmlFor="image"
+                  className="inline-flex h-7 cursor-pointer items-center gap-1 rounded-md border bg-background px-2 text-xs hover:bg-muted"
                 >
-                  <Trash2 className="size-4 ml-1" />
-                  حذف الصورة
-                </Button>
-              )}
+                  <ImagePlus className="size-3" />
+                  {imagePreview ? "تغيير" : "صورة"}
+                </Label>
+                <Input
+                  id="image"
+                  type="file"
+                  accept="image/jpeg,image/png,image/webp,image/gif"
+                  className="hidden"
+                  onChange={handleImageChange}
+                />
+                {(imagePreview || contact?.image) && (
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="xs"
+                    onClick={handleRemoveImage}
+                  >
+                    <Trash2 className="size-3" />
+                  </Button>
+                )}
+              </div>
+              <p className="text-[10px] text-muted-foreground leading-tight">
+                JPG/PNG — حتى 2MB
+              </p>
             </div>
-            <p className="text-xs text-muted-foreground text-center">
-              JPG أو PNG أو WEBP — حتى 2 ميجابايت
-            </p>
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="name">الاسم *</Label>
+          <div className="space-y-1">
+            <Label htmlFor="name" className={labelClass}>
+              الاسم *
+            </Label>
             <Input
               id="name"
+              className={fieldClass}
               value={form.name}
               onChange={(e) => setForm({ ...form, name: e.target.value })}
               required
             />
           </div>
 
-          <div className="grid grid-cols-2 gap-3">
-            <div className="space-y-2">
-              <Label htmlFor="phone">الهاتف *</Label>
+          <div className="grid grid-cols-2 gap-2">
+            <div className="space-y-1">
+              <Label htmlFor="phone" className={labelClass}>
+                الهاتف *
+              </Label>
               <Input
                 id="phone"
                 type="tel"
                 dir="ltr"
-                className="text-left"
+                className={cn(fieldClass, "text-left")}
                 value={form.phone}
                 onChange={(e) => setForm({ ...form, phone: e.target.value })}
                 required
               />
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="phone2">هاتف إضافي</Label>
+            <div className="space-y-1">
+              <Label htmlFor="phone2" className={labelClass}>
+                هاتف 2
+              </Label>
               <Input
                 id="phone2"
                 type="tel"
                 dir="ltr"
-                className="text-left"
+                className={cn(fieldClass, "text-left")}
                 value={form.phone2}
                 onChange={(e) => setForm({ ...form, phone2: e.target.value })}
               />
             </div>
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="email">البريد الإلكتروني</Label>
+          <div className="space-y-1">
+            <Label htmlFor="email" className={labelClass}>
+              البريد
+            </Label>
             <Input
               id="email"
               type="email"
               dir="ltr"
-              className="text-left"
+              className={cn(fieldClass, "text-left")}
               value={form.email}
               onChange={(e) => setForm({ ...form, email: e.target.value })}
             />
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="address">العنوان *</Label>
+          <div className="space-y-1">
+            <Label htmlFor="address" className={labelClass}>
+              العنوان *
+            </Label>
             <Input
               id="address"
+              className={fieldClass}
               value={form.address}
               onChange={(e) => setForm({ ...form, address: e.target.value })}
               required
             />
           </div>
 
-          <div className="grid grid-cols-2 gap-3">
-            <div className="space-y-2">
-              <Label htmlFor="city">المدينة</Label>
+          <div className="grid grid-cols-2 gap-2">
+            <div className="space-y-1">
+              <Label htmlFor="city" className={labelClass}>
+                المدينة
+              </Label>
               <Input
                 id="city"
+                className={fieldClass}
                 value={form.city}
                 onChange={(e) => setForm({ ...form, city: e.target.value })}
               />
             </div>
-            <div className="space-y-2">
-              <Label>التصنيف</Label>
+            <div className="space-y-1">
+              <Label className={labelClass}>التصنيف</Label>
               <Select
                 value={form.category}
                 onValueChange={(v) => v && setForm({ ...form, category: v })}
               >
-                <SelectTrigger>
+                <SelectTrigger className={fieldClass}>
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -286,29 +306,33 @@ export function ContactForm({
             </div>
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="notes">ملاحظات</Label>
+          <div className="space-y-1">
+            <Label htmlFor="notes" className={labelClass}>
+              ملاحظات
+            </Label>
             <Textarea
               id="notes"
               rows={2}
+              className="min-h-[52px] text-sm resize-none"
               value={form.notes}
               onChange={(e) => setForm({ ...form, notes: e.target.value })}
             />
           </div>
 
           {error && (
-            <p className="text-sm text-destructive text-center">{error}</p>
+            <p className="text-xs text-destructive text-center">{error}</p>
           )}
 
-          <DialogFooter className="gap-2 sm:gap-0">
+          <DialogFooter className="gap-2 pt-1 sm:gap-2">
             <Button
               type="button"
               variant="outline"
+              size="sm"
               onClick={() => onOpenChange(false)}
             >
               إلغاء
             </Button>
-            <Button type="submit" disabled={saving}>
+            <Button type="submit" size="sm" disabled={saving}>
               {saving ? "جاري الحفظ..." : contact ? "تحديث" : "إضافة"}
             </Button>
           </DialogFooter>
