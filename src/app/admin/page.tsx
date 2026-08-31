@@ -34,6 +34,7 @@ import { ImportDialog } from "@/components/import-dialog";
 import { ImportBanner } from "@/components/import-banner";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { SiteQrCode } from "@/components/site-qr-code";
+import { BackupPanel } from "@/components/backup-panel";
 
 export default function AdminDashboardPage() {
   const router = useRouter();
@@ -212,6 +213,8 @@ export default function AdminDashboardPage() {
 
       <main className="container mx-auto px-4 py-6 space-y-6">
         <ImportBanner onImport={() => setImportOpen(true)} />
+
+        <BackupPanel onRestored={loadContacts} />
 
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div className="relative flex-1 min-w-[200px] max-w-md">

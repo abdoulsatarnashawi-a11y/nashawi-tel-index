@@ -34,3 +34,24 @@ export const CATEGORIES = [
 ] as const;
 
 export type Category = (typeof CATEGORIES)[number];
+
+export type BackupAction = "backup" | "restore";
+
+export interface BackupLogEntry {
+  id: string;
+  action: BackupAction;
+  createdAt: string;
+  contactCount: number;
+  imageCount: number;
+  status: "success" | "failed";
+  message?: string;
+}
+
+export interface BackupFile {
+  version: 1;
+  app: "nashawi-tel";
+  createdAt: string;
+  contacts: Contact[];
+  admin: AdminConfig | null;
+  images: Record<string, { mime: string; data: string }>;
+}
