@@ -163,7 +163,7 @@ export function ContactForm({
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent className="max-w-[min(100%-1rem,340px)] gap-2 p-3 max-h-[88vh] overflow-y-auto">
         <DialogHeader className="gap-1">
-          <DialogTitle className="text-sm">
+          <DialogTitle className="text-sm leading-snug">
             {contact ? "تعديل جهة اتصال" : "إضافة جهة اتصال"}
           </DialogTitle>
         </DialogHeader>
