@@ -61,6 +61,32 @@ export async function deleteContact(id: string): Promise<void> {
   await saveContacts(contacts.filter((c) => c.id !== id));
 }
 
+export async function addContactsBulk(
+  newContacts: Contact[]
+): Promise<{ imported: Contact[]; skipped: number }> {
+  const existing = await getContacts();
+  const existingPhones = new Set(
+    existing.map((c) => c.phone.replace(/\D/g, "").slice(-9))
+  );
+
+  const imported: Contact[] = [];
+  let skipped = 0;
+
+  for (const contact of newContacts) {
+    const key = contact.phone.replace(/\D/g, "").slice(-9);
+    if (existingPhones.has(key)) {
+      skipped++;
+      continue;
+    }
+    existingPhones.add(key);
+    existing.push(contact);
+    imported.push(contact);
+  }
+
+  await saveContacts(existing);
+  return { imported, skipped };
+}
+
 export async function getAdminConfig(): Promise<AdminConfig | null> {
   return readJson<AdminConfig | null>(ADMIN_FILE, null);
 }

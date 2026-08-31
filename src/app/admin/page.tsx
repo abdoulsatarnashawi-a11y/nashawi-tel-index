@@ -26,7 +26,9 @@ import {
   Home,
   Search,
   RefreshCw,
+  Upload,
 } from "lucide-react";
+import { ImportDialog } from "@/components/import-dialog";
 
 export default function AdminDashboardPage() {
   const router = useRouter();
@@ -42,6 +44,7 @@ export default function AdminDashboardPage() {
     message: string;
   } | null>(null);
   const [regenerating, setRegenerating] = useState(false);
+  const [importOpen, setImportOpen] = useState(false);
 
   const loadContacts = useCallback(async () => {
     const res = await fetch("/api/contacts");
@@ -173,15 +176,24 @@ export default function AdminDashboardPage() {
               className="pr-9"
             />
           </div>
-          <Button
-            onClick={() => {
-              setEditing(null);
-              setFormOpen(true);
-            }}
-          >
-            <Plus className="size-4 ml-1" />
-            إضافة جهة اتصال
-          </Button>
+          <div className="flex flex-wrap gap-2">
+            <Button
+              variant="outline"
+              onClick={() => setImportOpen(true)}
+            >
+              <Upload className="size-4 ml-1" />
+              استيراد
+            </Button>
+            <Button
+              onClick={() => {
+                setEditing(null);
+                setFormOpen(true);
+              }}
+            >
+              <Plus className="size-4 ml-1" />
+              إضافة جهة اتصال
+            </Button>
+          </div>
         </div>
 
         <p className="text-sm text-muted-foreground">
@@ -209,6 +221,12 @@ export default function AdminDashboardPage() {
           </div>
         )}
       </main>
+
+      <ImportDialog
+        open={importOpen}
+        onOpenChange={setImportOpen}
+        onImported={loadContacts}
+      />
 
       <ContactForm
         open={formOpen}

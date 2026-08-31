@@ -1,0 +1,17 @@
+{
+  "members": [
+    {
+      "full_name": "أحمد محمد نشاوي",
+      "phone": "+966501234567",
+      "email": "ahmed@example.com",
+      "address": "حي النخيل",
+      "city": "الرياض",
+      "profession": "مهندس"
+    },
+    {
+      "name": "فاطمة علي",
+      "mobile": "+966509876543",
+      "birth_place": "دمشق"
+    }
+  ]
+}
