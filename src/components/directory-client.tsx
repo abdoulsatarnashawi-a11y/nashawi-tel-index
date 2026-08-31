@@ -5,9 +5,8 @@ import type { Contact } from "@/lib/types";
 import { CATEGORIES } from "@/lib/types";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { ContactCard } from "@/components/contact-card";
+import { ContactTable } from "@/components/contact-table";
 import { Search, Users } from "lucide-react";
-import { cn } from "@/lib/utils";
 
 interface DirectoryClientProps {
   initialContacts: Contact[];
@@ -48,22 +47,23 @@ export function DirectoryClient({ initialContacts }: DirectoryClientProps) {
   }, [initialContacts]);
 
   return (
-    <div className="space-y-6">
-      <div className="text-center space-y-2 py-4">
-        <h2 className="text-2xl font-bold">ابحث في الدليل</h2>
-        <p className="text-muted-foreground">
-          {initialContacts.length} جهة اتصال مسجّلة
-        </p>
-      </div>
-
-      <div className="relative max-w-xl mx-auto">
-        <Search className="absolute right-3 top-1/2 -translate-y-1/2 size-5 text-muted-foreground" />
-        <Input
-          placeholder="ابحث بالاسم، الهاتف، العنوان..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          className="pr-10 h-12 text-base"
-        />
+    <div className="space-y-4">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div>
+          <h2 className="text-lg font-bold">دليل جهات الاتصال</h2>
+          <p className="text-sm text-muted-foreground">
+            {initialContacts.length} سجل
+          </p>
+        </div>
+        <div className="relative w-full sm:w-72">
+          <Search className="absolute right-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
+          <Input
+            placeholder="بحث..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="pr-9 h-9 text-sm"
+          />
+        </div>
       </div>
 
       <div className="flex flex-wrap justify-center gap-2">
@@ -95,16 +95,7 @@ export function DirectoryClient({ initialContacts }: DirectoryClientProps) {
           </p>
         </div>
       ) : (
-        <div
-          className={cn(
-            "grid gap-4",
-            "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3"
-          )}
-        >
-          {filtered.map((contact) => (
-            <ContactCard key={contact.id} contact={contact} />
-          ))}
-        </div>
+        <ContactTable contacts={filtered} />
       )}
     </div>
   );
