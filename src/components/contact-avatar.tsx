@@ -12,6 +12,7 @@ function getInitials(name: string): string {
 }
 
 const sizeClasses = {
+  xs: "size-8 text-[9px]",
   sm: "size-10 text-[10px]",
   md: "size-16 text-sm",
   lg: "size-24 text-xl",
