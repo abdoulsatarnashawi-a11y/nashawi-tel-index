@@ -29,6 +29,7 @@ import {
   Upload,
 } from "lucide-react";
 import { ImportDialog } from "@/components/import-dialog";
+import { ImportBanner } from "@/components/import-banner";
 
 export default function AdminDashboardPage() {
   const router = useRouter();
@@ -166,6 +167,8 @@ export default function AdminDashboardPage() {
       </header>
 
       <main className="container mx-auto px-4 py-6 space-y-6">
+        <ImportBanner onImport={() => setImportOpen(true)} />
+
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div className="relative flex-1 min-w-[200px] max-w-md">
             <Search className="absolute right-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />

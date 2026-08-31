@@ -80,6 +80,16 @@ export async function POST(request: Request) {
         const result = await fetchNashawiMembers(body.url);
         parsed = result.contacts;
         meta = { url: result.source };
+      } else if (body.contacts && Array.isArray(body.contacts)) {
+        parsed = body.contacts
+          .map((c: { name?: string; phone?: string; tel?: string; email?: string }) => ({
+            name: c.name?.trim() ?? "",
+            phone: (c.phone || c.tel || "").trim(),
+            email: c.email?.trim(),
+            address: "—",
+            category: source === "facebook" ? "أصدقاء" : "أخرى",
+          }))
+          .filter((c: ParsedContactInput) => c.name && c.phone);
       } else if (body.content) {
         switch (source) {
           case "mobile":

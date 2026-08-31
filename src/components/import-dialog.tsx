@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -47,6 +47,7 @@ export function ImportDialog({
   const [result, setResult] = useState<ImportResponse | null>(null);
   const [error, setError] = useState("");
   const [nashawiUrl, setNashawiUrl] = useState("");
+  const [supportsPicker, setSupportsPicker] = useState(false);
 
   const mobileRef = useRef<HTMLInputElement>(null);
   const facebookRef = useRef<HTMLInputElement>(null);
@@ -56,6 +57,81 @@ export function ImportDialog({
   function reset() {
     setResult(null);
     setError("");
+  }
+
+  useEffect(() => {
+    setSupportsPicker(
+      typeof navigator !== "undefined" &&
+        "contacts" in navigator &&
+        "ContactsManager" in window
+    );
+  }, []);
+
+  async function pickMobileContacts() {
+    setLoading(true);
+    setError("");
+    setResult(null);
+
+    try {
+      const nav = navigator as Navigator & {
+        contacts?: {
+          select: (
+            props: string[],
+            opts?: { multiple?: boolean }
+          ) => Promise<
+            Array<{
+              name?: string[];
+              tel?: string[];
+              email?: string[];
+            }>
+          >;
+        };
+      };
+
+      if (!nav.contacts) {
+        setError("المتصفح لا يدعم الاختيار المباشر — استخدم ملف vCard");
+        setLoading(false);
+        return;
+      }
+
+      const picked = await nav.contacts.select(["name", "tel", "email"], {
+        multiple: true,
+      });
+
+      const contacts = picked
+        .map((c) => ({
+          name: c.name?.[0] ?? "",
+          phone: c.tel?.[0] ?? "",
+          email: c.email?.[0],
+        }))
+        .filter((c) => c.name && c.phone);
+
+      if (contacts.length === 0) {
+        setError("لم تُختر أي جهات اتصال");
+        setLoading(false);
+        return;
+      }
+
+      const res = await fetch("/api/admin/import", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ source: "mobile", contacts }),
+      });
+
+      const data = await res.json();
+      setLoading(false);
+
+      if (!res.ok) {
+        setError(data.error ?? "فشل الاستيراد");
+        return;
+      }
+
+      setResult(data);
+      onImported();
+    } catch {
+      setLoading(false);
+      setError("تم إلغاء الاختيار أو فشل الوصول لجهات الاتصال");
+    }
   }
 
   async function uploadFile(source: string, file: File) {
@@ -178,8 +254,19 @@ export function ImportDialog({
               className="hidden"
               onChange={(e) => handleFileChange("mobile", e)}
             />
+            {supportsPicker && (
+              <Button
+                className="w-full"
+                onClick={pickMobileContacts}
+                disabled={loading}
+              >
+                <Smartphone className="size-4 ml-2" />
+                اختيار من جهات اتصال الموبايل
+              </Button>
+            )}
             <Button
               className="w-full"
+              variant={supportsPicker ? "outline" : "default"}
               onClick={() => mobileRef.current?.click()}
               disabled={loading}
             >
