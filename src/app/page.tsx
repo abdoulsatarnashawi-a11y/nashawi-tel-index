@@ -2,6 +2,7 @@ import { Phone, Settings } from "lucide-react";
 import { LinkButton } from "@/components/link-button";
 import { DirectoryClient } from "@/components/directory-client";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { SiteQrCode } from "@/components/site-qr-code";
 import { getContacts } from "@/lib/storage";
 
 export default async function HomePage() {
@@ -34,8 +35,13 @@ export default async function HomePage() {
         <DirectoryClient initialContacts={contacts} />
       </main>
 
-      <footer className="border-t mt-auto py-6 text-center text-sm text-muted-foreground">
-        <p>© {new Date().getFullYear()} نشاوي — دليل الهواتف والعناوين</p>
+      <footer className="border-t mt-auto py-8">
+        <div className="container mx-auto px-4 space-y-6">
+          <SiteQrCode />
+          <p className="text-center text-sm text-muted-foreground">
+            © {new Date().getFullYear()} نشاوي — دليل الهواتف والعناوين
+          </p>
+        </div>
       </footer>
     </div>
   );

@@ -32,6 +32,7 @@ import {
 import { ImportDialog } from "@/components/import-dialog";
 import { ImportBanner } from "@/components/import-banner";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { SiteQrCode } from "@/components/site-qr-code";
 
 export default function AdminDashboardPage() {
   const router = useRouter();
@@ -226,6 +227,10 @@ export default function AdminDashboardPage() {
             ))}
           </div>
         )}
+
+        <div className="rounded-lg border bg-card p-6">
+          <SiteQrCode />
+        </div>
       </main>
 
       <ImportDialog
